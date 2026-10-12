@@ -1,0 +1,21 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),os=require('node:os'),path=require('node:path'),crypto=require('node:crypto');
+const {EventEmitter}=require('node:events'),{PassThrough}=require('node:stream');
+const {createLauncher,safeId}=require('../launcher.cjs');
+const {createToolchainStore}=require('../toolchain.cjs');
+function pe(file){const b=Buffer.alloc(128);b.write('MZ');b.writeUInt32LE(64,60);b.writeUInt32LE(0x4550,64);b.writeUInt16LE(0x8664,68);fs.writeFileSync(file,b);}
+function fixture(){const dir=fs.mkdtempSync(path.join(os.tmpdir(),'portlight-test-'));const relinker=path.join(dir,'relinker.exe'),libs=path.join(dir,'libs');pe(relinker);fs.mkdirSync(libs);fs.writeFileSync(path.join(libs,'test.prx'),'test fixture');return {dir,relinker,libs};}
+test('IDs reject traversal and prototype keys; no platform allowlist',()=>{for(const id of ['../x','__proto__','constructor',''])assert.throws(()=>safeId(id));for(const id of ['CUSA00001','PPSA00001','MY_HOMEBREW'])assert.equal(safeId(id),id);});
+test('toolchain selection persists paths and checksum; invalid selection retains prior settings',async()=>{const f=fixture(),s=createToolchainStore(f.dir);assert.equal(s.get(),null);const t=await s.save(f.relinker,f.libs,true);assert.equal(t.sha256,crypto.createHash('sha256').update(fs.readFileSync(f.relinker)).digest('hex'));assert.equal(createToolchainStore(f.dir).get().intel,true);await assert.rejects(s.save(__filename,f.libs,false));assert.equal(s.get().relinker,t.relinker);});
+test('prepare copies resources, creates executable and keeps conversion hidden; launch is visible',async()=>{
+ const f=fixture(),s=createToolchainStore(f.dir);await s.save(f.relinker,f.libs,true);
+ const source=path.join(f.dir,'source');fs.mkdirSync(source);const elf=path.join(source,'game.elf'),h=Buffer.alloc(64);h.write('7f454c46',0,'hex');h[4]=2;h[5]=1;h.writeUInt16LE(62,18);fs.writeFileSync(elf,h);fs.writeFileSync(path.join(source,'resource.txt'),'original');
+ const calls=[];const spawnProcess=(exe,args,opts)=>{calls.push({exe,args,opts});const c=new EventEmitter();c.stdout=new PassThrough();c.stderr=new PassThrough();process.nextTick(()=>{if(args.length)pe(args.at(-1));c.emit('spawn');c.stdout.end('fixture log');c.stderr.end();c.emit('close',0,null)});return c;};
+ const l=createLauncher({dataDir:path.join(f.dir,'state'),getToolchain:async()=>s.get(),spawnProcess});
+ await l.prepare('CUSA00001',elf);assert.equal(calls[0].opts.windowsHide,true);assert.ok(calls[0].args.includes('--to-intel'));
+ assert.equal(fs.readFileSync(path.join(path.dirname(l.info('CUSA00001').exe),'app0/resource.txt'),'utf8'),'original');
+ await l.launch('CUSA00001');assert.equal(calls[1].opts.windowsHide,false);assert.equal(calls[1].opts.shell,false);
+});
+test('unattached launch and container input return actual errors',async()=>{const f=fixture(),l=createLauncher({dataDir:path.join(f.dir,'state'),getToolchain:async()=>null});await assert.rejects(l.launch('TEST'),/Attach/);await l.attach('TEST',f.relinker);const input=path.join(f.dir,'eboot.bin');fs.writeFileSync(input,Buffer.alloc(32));await assert.rejects(l.prepare('TEST',input),/clean x86-64 ELF/);assert.equal(l.info('TEST').attached,true);assert.equal(l.info('TEST').busy,false);});
+test('changed relinker is detected before conversion',async()=>{const f=fixture(),s=createToolchainStore(f.dir);await s.save(f.relinker,f.libs,false);fs.appendFileSync(f.relinker,'changed');const elf=path.join(f.dir,'x.elf'),h=Buffer.alloc(64);h.write('7f454c46',0,'hex');h[4]=2;h[5]=1;h.writeUInt16LE(62,18);fs.writeFileSync(elf,h);const l=createLauncher({dataDir:path.join(f.dir,'state'),getToolchain:async()=>s.get()});await assert.rejects(l.prepare('TEST',elf),/changed since configuration/);});
+test('actual Windows process launch records completion', {skip:process.platform!=='win32'},async()=>{const f=fixture(),l=createLauncher({dataDir:path.join(f.dir,'state'),getToolchain:async()=>null});await l.attach('NODE_FIXTURE',process.execPath);await l.launch('NODE_FIXTURE');for(let i=0;i<100&&l.info('NODE_FIXTURE').running;i++)await new Promise(r=>setTimeout(r,50));assert.equal(l.info('NODE_FIXTURE').lastExit,0);});

@@ -1,0 +1,93 @@
+{
+  "PPSA19111": {
+    "name": "XashPS5",
+    "source": "https://github.com/GordonProsperoMan/xash3d-ps5",
+    "status": "Starts; requires Half-Life data",
+    "message": "XashPS5 reports valve/liblist.gam missing and asks for the full valve folder from a Half-Life installation. Process exits with code 0 after diagnostic.",
+    "tested": "2026-10-12"
+  },
+  "PPSA28319": {
+    "name": "Middle Ages Ping Pong",
+    "source": "https://github.com/STL1te/MedievalTennis",
+    "status": "Extraction unavailable",
+    "message": "Reconstructed ELF does not match embedded SHA-256",
+    "tested": "2026-10-12"
+  },
+  "PPSA59322": {
+    "name": "ccleste",
+    "source": "https://github.com/darkxex/PS5_Celeste",
+    "status": "First level rendered through Electron + AnyPS5",
+    "message": "Prepare and Launch clicked in packaged Electron app. Animated title screen and first level rendered; mouse input started level. Brief automated keyboard taps did not establish movement. Sustained gameplay and controller testing remain unverified.",
+    "tested": "2026-10-12"
+  },
+  "PPSA69421": {
+    "name": "SuperTuxKart",
+    "source": "https://github.com/Marice/stk-ps5",
+    "status": "Conversion failed",
+    "message": "Clean ELF available. FAIL: Forbidden syscall instruction at code offset 0xe2c3a7 (offset 0xe2c3a7)",
+    "tested": "2026-10-12"
+  },
+  "PPSA74207": {
+    "name": "The Simpsons Game",
+    "source": "https://github.com/LoZazaMastro/TheSimpsonsGame-PS5-Builder",
+    "status": "Extraction unavailable",
+    "message": "No packaged executable",
+    "tested": "2026-10-12"
+  },
+  "PPSA98001": {
+    "name": "PokeMMO Prospero",
+    "source": "https://github.com/Shabbypenguin/PokeMMO-Prospero",
+    "status": "Still running after 12 seconds; stopped after test; gameplay unverified",
+    "message": "Clean ELF available. No explicit runtime diagnostic; see full log.",
+    "tested": "2026-10-12"
+  },
+  "PPSA99006": {
+    "name": "ProsperoPuzzles",
+    "source": "https://github.com/blackbearreloaded/ProsperoPuzzles",
+    "status": "Runtime startup failure",
+    "message": "Converted, then exited with Windows code 3221226505 (0xC0000409). Log stops after transferring control to ELF entry point; no detailed diagnostic.",
+    "tested": "2026-10-12"
+  },
+  "PPSA99007": {
+    "name": "Yamagi Quake II",
+    "source": "https://github.com/blackbearreloaded/ps5-yamagi-quake2",
+    "status": "Still running after 12 seconds; stopped after test; gameplay unverified",
+    "message": "Clean ELF available. No explicit runtime diagnostic; see full log.",
+    "tested": "2026-10-12"
+  },
+  "PPSA99009": {
+    "name": "ProsperoLichess",
+    "source": "https://github.com/blackbearreloaded/ProsperoLichess",
+    "status": "Still running after 12 seconds; stopped after test; gameplay unverified",
+    "message": "Clean ELF available. No explicit runtime diagnostic; see full log.",
+    "tested": "2026-10-12"
+  },
+  "PPSA99010": {
+    "name": "vkQuake",
+    "source": "https://github.com/mihawk-99/PS5_vkQuake",
+    "status": "Exited at startup; cause undetermined",
+    "message": "Converted, then exited with code 0. Log stops after transferring control to ELF entry point. No playable window verified.",
+    "tested": "2026-10-12"
+  },
+  "PPSA99303": {
+    "name": "Quake3e",
+    "source": "https://github.com/griches/PS5_Quake3e",
+    "status": "Starts; requires Quake III Arena data",
+    "message": "Game reports: you need to install Quake III Arena in order to play. Its baseq3 data is missing. Windows exit code was 0 despite game reporting status 1.",
+    "tested": "2026-10-12"
+  },
+  "PPSA99666": {
+    "name": "DOOM Native Port",
+    "source": "https://github.com/lowbit/ps5-doom",
+    "status": "DOOM renders; physical keyboard response confirmed",
+    "message": "Prepare and Launch clicked in packaged Electron app. Shareware selection, episode menu and rendered 3D world observed. User confirmed physical keyboard menus respond. Startup/input smoke test, not full-game validation.",
+    "tested": "2026-10-12"
+  },
+  "PPSA99728": {
+    "name": "OpenRCT2 Native Port",
+    "source": "https://github.com/lowbit/ps5-openrct2",
+    "status": "Still running after 12 seconds; stopped after test; gameplay unverified",
+    "message": "Clean ELF available. No explicit runtime diagnostic; see full log.",
+    "tested": "2026-10-12"
+  }
+}

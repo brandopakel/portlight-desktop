@@ -1,0 +1,3 @@
+type LocalStatus = {attached:boolean;exe:string;running:boolean;busy:boolean;message:string;lastExit:number|null;log:string;source:string;compatibility:string;homebrew?:{status:string;message:string;downloaded:boolean;bytes:number}|null}
+type ToolStatus={configured:boolean;relinker:string}
+interface Window { overdriveLocal?: { status(id:string):Promise<LocalStatus>;attach(id:string):Promise<LocalStatus>;prepare(id:string):Promise<LocalStatus>;launch(id:string):Promise<LocalStatus>;log(id:string):Promise<void>;source(id:string):Promise<void>;toolchain():Promise<ToolStatus>;configure():Promise<ToolStatus> } }
